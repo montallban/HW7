@@ -166,7 +166,7 @@ def generate_fname(args, params_str):
                                                                                           args.rotation)       
 
 
-def training_set_generator_images(ins, outs, batch_size=args.batch_size,
+def training_set_generator_images(ins, outs, batch_size=10,
                           input_name='input', 
                         output_name='output'):
     '''
