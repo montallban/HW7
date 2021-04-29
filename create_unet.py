@@ -147,7 +147,7 @@ def create_uNet(input_shape, nclasses, filters=[30,45,60],
     
     return model
 
-def create_seq():(input_shape, nclasses, filters=[30,45,60], 
+def create_seq(input_shape, nclasses, filters=[30,45,60], 
                    lambda_regularization=None, activation='elu'):
     # A sequential model for semantic reasoning
 
