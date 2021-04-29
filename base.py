@@ -231,7 +231,7 @@ def execute_exp(args=None):
 
     # fit model
    # model.fit(ins,outs)
-    generator = training_set_generator_images(ins, outs, batch_size=args.batch_size,
+    generator = training_set_generator_images(ins_train, outs_train, batch_size=args.batch_size,
                             input_name='input',
                             output_name='output')
 
