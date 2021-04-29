@@ -24,7 +24,6 @@ import os
 import fnmatch
 import re
 import numpy as np
-from RNN import *
 from create_unet import *
 from chesapeake_data import *
 
@@ -60,7 +59,7 @@ file_base = '/scratch/fagg/chesapeake/'
 def create_parser():
     # Parse the command-line arguments
     parser = argparse.ArgumentParser(description='BMI Learner', fromfile_prefix_chars='@')
-    parser.add_argument('-unet',type=str,default='recurrent',help="Choose shallow, deep, or inception")
+    parser.add_argument('-network',type=str,default='unet',help="Choose shallow, deep, or inception")
     parser.add_argument('-rotation', type=int, default=3, help='Cross-validation rotation')
     parser.add_argument('-epochs', type=int, default=100, help='Training epochs')
     parser.add_argument('-dataset', type=str, default=r"C:\Users\User\AML\HW4\core50\core50_128x128", help='Data set directory')
@@ -217,12 +216,13 @@ def execute_exp(args=None):
     # Load data
     fold = "F" + args.rotation
     # specify half 
-    ins, mask, outs, weights = load_files_from_dir(file_base + '/train/' + fold, filt='-*[01234]]?')
-    ins_val, mask, outs_val, weights = load_files_from_dir(file_base + '/train/' + fold, filt='-*[89]?')
+    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[01234]]?')
+    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[89]?')
 
-    model = create_uNet(ins_train.shape[1:4], nclasses=7)
+    if args.network == 'unet':
+        model = create_uNet(ins_train.shape[1:4], nclasses=7)
 
-    ins_test, mask, outs_test, weights = load_files_from_dir(file_base + '/valid/' + fold, filt='-*?')
+    ins_test, mask, outs_test, weights = load_files_from_dir(args.dataset+ '/valid/' + fold, filt='-*?')
 
 
     # Report if verbosity is turned on
