@@ -3,15 +3,15 @@
 #SBATCH --partition=normal
 #SBATCH --ntasks=1
 # memory in MB
-#SBATCH --mem=10000
+#SBATCH --mem=35000
 # The %04a is translated into a 4-digit number that encodes the SLURM_ARRAY_TASK_ID
 #SBATCH --output=results_hw7/unet_%04a.txt
 #SBATCH --error=results_hw7/error_unet_%04a.txt
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 #SBATCH --job-name=unet_hw7
 #SBATCH --mail-user=michael.montalbano@ou.edu
 #SBATCH --mail-type=ALL
-#SBATCH --chdir=/home/mcmontalbano/HW7
+#SBATCH --chdir=/home/mcmontalbano/homework7
 #SBATCH --array=0-5
 #
 #################################################
