@@ -26,8 +26,9 @@ import re
 import numpy as np
 from create_unet import *
 from chesapeake_data import *
-
+from job_control import *
 import sys
+
 tf_tools = "../../../../../tf_tools/"
 sys.path.append(tf_tools + "metrics")
 sys.path.append(tf_tools + "networks")
@@ -214,20 +215,19 @@ def execute_exp(args=None):
         return
     
     # Load data
-    fold = "F" + args.rotation
+    fold = "F" + str(args.rotation)
     # specify half 
-    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[01234]]?')
+    print("loading")
+    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[12]]?')
+    print("loaded train")
     ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[89]?')
-
+    print("loaded val")
     if args.network == 'unet':
         model = create_uNet(ins_train.shape[1:4], nclasses=7)
 
+    print(model.summary())
+
     ins_test, mask, outs_test, weights = load_files_from_dir(args.dataset+ '/valid/' + fold, filt='-*?')
-
-
-    # Report if verbosity is turned on
-    if args.verbose >= 1:
-        print(model.summary())
 
     # fit model
    # model.fit(ins,outs)
