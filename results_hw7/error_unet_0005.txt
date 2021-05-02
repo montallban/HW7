@@ -1,0 +1,11 @@
+2021-05-01 23:16:36.731297: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer.so.6'; dlerror: libnvinfer.so.6: cannot open shared object file: No such file or directory
+2021-05-01 23:16:36.731416: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer_plugin.so.6'; dlerror: libnvinfer_plugin.so.6: cannot open shared object file: No such file or directory
+2021-05-01 23:16:36.731433: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:30] Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+Traceback (most recent call last):
+  File "base.py", line 283, in <module>
+    execute_exp(args)
+  File "base.py", line 209, in execute_exp
+    args_str = augment_args(args)
+  File "base.py", line 127, in augment_args
+    assert (args.exp_index >= 0 and args.exp_index < ji.get_njobs()), "exp_index out of range"
+AssertionError: exp_index out of range

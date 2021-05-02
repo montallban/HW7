@@ -218,9 +218,9 @@ def execute_exp(args=None):
     fold = "F" + str(args.rotation)
     # specify half 
     print("loading")
-    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[12]]?')
+    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[0]]?')
     print("loaded train")
-    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[89]?')
+    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-[12345]9?')
     print("loaded val")
     if args.network == 'unet':
         model = create_uNet(ins_train.shape[1:4], nclasses=7)

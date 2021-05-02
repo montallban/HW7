@@ -1,0 +1,6 @@
+augmenting args
+basic
+Total jobs: 5
+{'rotation': 3}
+loading
+loaded train
