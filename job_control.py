@@ -2,6 +2,7 @@
 JobIterator
 Author: Andrew H. Fagg
 Modified by: Alan Lee
+Used by: Michael Montalbano
 Translate a dictionary containing parameter/list pairs (key/value) into a Cartesian product
 of all combinations of possible parameter values.  
 Internally, the Cartesian product is stored as a list of dictionaries (parameter/value pairs).  
