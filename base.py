@@ -67,7 +67,7 @@ def create_parser():
     parser.add_argument('-Ntraining', type=int, default=4, help='Number of training folds')
     parser.add_argument('-exp_index', type=int, default=0, help='Experiment index')
     parser.add_argument('-Nfolds', type=int, default=5, help='Maximum number of folds')
-    parser.add_argument('-results_path', type=str, default='./results_hw6', help='Results directory')
+    parser.add_argument('-results_path', type=str, default='./results_hw7', help='Results directory')
     parser.add_argument('-hidden', nargs='+', type=int, default=[100, 5], help='Number of hidden units per layer (sequence of ints)')
     parser.add_argument('-conv_size', nargs='+', type=int, default=[3,5], help='Convolution filter size per layer (sequence of ints)')
     parser.add_argument('-conv_nfilters', nargs='+', type=int, default=[10,15], help='Convolution filters per layer (sequence of ints)')
@@ -78,7 +78,7 @@ def create_parser():
     parser.add_argument('-min_delta', type=float, default=0.0, help="Minimum delta for early termination")
     parser.add_argument('-patience', type=int, default=100, help="Patience for early termination")
     parser.add_argument('-verbose', '-v', action='count', default=0, help="Verbosity level")
-    parser.add_argument('-experiment_type', type=str, default="test", help="Experiment type")
+    parser.add_argument('-experiment_type', type=str, default="basic", help="Experiment type")
     parser.add_argument('-nogo', action='store_true', help='Do not perform the experiment')
     parser.add_argument('-batch_size', type=int, default=50, help="Patience for early termination")
 
@@ -216,19 +216,27 @@ def execute_exp(args=None):
     
     # Load data
     fold = "F" + str(args.rotation)
+    regex = ['-[1]','-*5[0]','-*10[0]','-*15[0]','-*20[0]','-*25[0]']
     # specify half 
     print("loading")
-    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[0]]?')
-    print("loaded train")
-    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-[12345]9?')
-    print("loaded val")
+    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt=regex[args.rotation])
+    ins_train = ins_train[:30]
+    outs_train = outs_train[:30]
+    print(len(ins_train))
+    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*2[9]?')
+    ins_val = ins_val[:10]
+    outs_val = outs_val[:10]
+    print("loaded val",len(ins_val))
+    tf.keras.backend.clear_session()
     if args.network == 'unet':
         model = create_uNet(ins_train.shape[1:4], nclasses=7)
 
     print(model.summary())
 
     ins_test, mask, outs_test, weights = load_files_from_dir(args.dataset+ '/valid/' + fold, filt='-*?')
-
+    print("test",len(ins_test))
+    ins_test = ins_test[:10]
+    outs_test = outs_test[:10]
     # fit model
    # model.fit(ins,outs)
     generator = training_set_generator_images(ins_train, outs_train, batch_size=args.batch_size,
@@ -253,18 +261,17 @@ def execute_exp(args=None):
     # Generate log data
     results = {}
     results['args'] = args
-    results['predict_training'] = model.predict(ins_train, outs_train)
+    results['predict_training'] = model.predict(ins_train)
     results['predict_training_eval'] = model.evaluate(ins_train, outs_train)
-    results['true_training'] = outs_train
-    results['predict_validation'] = model.predict(ins_val, outs_val)
+#    results['true_training'] = outs_train
+    results['predict_validation'] = model.predict(ins_val)
     results['predict_validation_eval'] = model.evaluate(ins_val, outs_val)
-    results['true_validation'] = outs_val
+#    results['true_validation'] = outs_val
     results['predict_testing'] = model.predict(ins_test)
     results['predict_testing_eval'] = model.evaluate(ins_test, outs_test)
     #results['folds'] = folds
     results['history'] = history.history
     
-    # Save results
     fbase = generate_fname(args, args_str)
     results['fname_base'] = fbase
     fp = open("%s_results.pkl"%(fbase), "wb")
