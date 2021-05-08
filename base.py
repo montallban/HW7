@@ -80,7 +80,7 @@ def create_parser():
     parser.add_argument('-verbose', '-v', action='count', default=0, help="Verbosity level")
     parser.add_argument('-experiment_type', type=str, default="basic", help="Experiment type")
     parser.add_argument('-nogo', action='store_true', help='Do not perform the experiment')
-    parser.add_argument('-batch_size', type=int, default=50, help="Patience for early termination")
+    parser.add_argument('-batch_size', type=int, default=5, help="Patience for early termination")
 
     
     return parser
@@ -112,9 +112,8 @@ def augment_args(args):
         p = {'rotation': range(5)}
     elif args.experiment_type == "test":
         print("test")
-        p = {'L2_regularizer': [None, 0.0001, 0.001, 0.005, 0.01],
-             'dropout': [None, 0.1, 0.2, 0.3, 0.4], 
-             'rotation': range(5)}
+        p = {'L2_regularizer': [None, 0.0001,0.0005,0.001],
+                    ' rotation': range(5)}
     else:
         assert False, "Bad experiment type"
         
@@ -165,7 +164,9 @@ def generate_fname(args, params_str):
                                                                                           dropout_str,
                                                                                           args.Ntraining,
                                                                                           args.rotation)       
-
+    if(args.network=="unet"):
+        return"%s/%s_unet_l2_%s_ntrain_%02d_rot_%02d"%(args.results_path, args.experiment_type,
+                                                         regularizer_str, args.Ntraining, args.rotation)
 
 def training_set_generator_images(ins, outs, batch_size=10,
                           input_name='input', 
@@ -216,32 +217,34 @@ def execute_exp(args=None):
     
     # Load data
     fold = "F" + str(args.rotation)
-    regex = ['-[1]','-*5[0]','-*10[0]','-*15[0]','-*20[0]','-*25[0]']
+    regex = ['-[1]','-*5[0]','-*10[0]','-*15[0]','-*20[0]']
     # specify half 
     print("loading")
-    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt=regex[args.rotation])
-    ins_train = ins_train[:30]
-    outs_train = outs_train[:30]
+    ins_train, mask, outs_train, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*[02]')
+    ins_train = ins_train[:50]
+    outs_train = outs_train[:50]
     print(len(ins_train))
-    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*2[9]?')
-    ins_val = ins_val[:10]
-    outs_val = outs_val[:10]
+    ins_val, mask, outs_val, weights = load_files_from_dir(args.dataset + '/train/' + fold, filt='-*8[9]?')
+    ins_val = ins_val[:50] 
+    outs_val = outs_val[:50]
     print("loaded val",len(ins_val))
     tf.keras.backend.clear_session()
     if args.network == 'unet':
         model = create_uNet(ins_train.shape[1:4], nclasses=7)
 
     print(model.summary())
-
+    
     ins_test, mask, outs_test, weights = load_files_from_dir(args.dataset+ '/valid/' + fold, filt='-*?')
-    print("test",len(ins_test))
-    ins_test = ins_test[:10]
-    outs_test = outs_test[:10]
+    ins_test = ins_test[:50]
+    outs_test = outs_test[:50]
     # fit model
    # model.fit(ins,outs)
     generator = training_set_generator_images(ins_train, outs_train, batch_size=args.batch_size,
                             input_name='input',
                             output_name='output')
+
+  #  print("here")
+  #  sys.exit()
 
     early_stopping_cb = keras.callbacks.EarlyStopping(patience=args.patience,
                                                       restore_best_weights=True,
@@ -269,6 +272,7 @@ def execute_exp(args=None):
 #    results['true_validation'] = outs_val
     results['predict_testing'] = model.predict(ins_test)
     results['predict_testing_eval'] = model.evaluate(ins_test, outs_test)
+    results['true_testing'] = outs_test
     #results['folds'] = folds
     results['history'] = history.history
     

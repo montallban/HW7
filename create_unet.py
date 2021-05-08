@@ -3,7 +3,7 @@
 
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.layers import Convolution2D, Dense, MaxPooling2D, Flatten, BatchNormalization, Dropout, Concatenate, Input, UpSampling2D
+from tensorflow.keras.layers import Add, Convolution2D, Dense, MaxPooling2D, Flatten, BatchNormalization, Dropout, Concatenate, Input, UpSampling2D
 from tensorflow.keras.models import Model
 
 
@@ -109,7 +109,7 @@ def create_uNet(input_shape, nclasses, filters=[30,45,60],
                           kernel_regularizer=lambda_regularization,
                           activation=activation)(tensor)
     
-    tensor = Concatenate()([tensor, tensor_list.pop()])
+    tensor = Add()([tensor, tensor_list.pop()])
 
     # upsample
     
@@ -126,7 +126,7 @@ def create_uNet(input_shape, nclasses, filters=[30,45,60],
                           kernel_regularizer=lambda_regularization,
                           activation=activation)(tensor)
     
-    tensor = Concatenate()([tensor, tensor_list.pop()])
+    tensor = Add()([tensor, tensor_list.pop()])
 
     #############################        
     output_tensor = Convolution2D(nclasses,

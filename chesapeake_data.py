@@ -73,7 +73,7 @@ def load_file_set(file_base, fnames):
         mask_all.append(mask)
         outs_all.append(outs)
         weights_all.append(weights)
-
+    
     # Compute shape for outputs
     sh = ins_all[0].shape
     sh_multi = (1, sh[0], sh[1], sh[2])
